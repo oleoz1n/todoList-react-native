@@ -7,27 +7,51 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { Dispatch, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
-const Tarefas = ({ item }: { item: string }) => {
+const Tarefas = ({
+    item,
+    taskItems,
+    setTaskItems,
+    index,
+}: {
+    item: string;
+    taskItems: Array<string>;
+    setTaskItems: Dispatch<React.SetStateAction<string[]>>;
+    index: number;
+
+}) => {
+
+    const handleApagar = ()=>{
+        const newTaskItems = taskItems.filter((_, i) => i !== index);
+        setTaskItems(newTaskItems);
+    }
+
     return (
-        <View>
-            <Text>{item}</Text>
+        <View style={styles.taskContainer}>
+            <Text style={styles.task}>{item}</Text>
+            <Ionicons
+                name="trash"
+                size={30}
+                color="red"
+                onPress={() => handleApagar()}/>
         </View>
     );
 };
 
+
 const App = () => {
     const [task, setTask] = useState("");
     const [taskItems, setTaskItems] = useState<Array<string>>([]);
+    
     return (
         <View style={styles.safeArea}>
             <StatusBar style="auto" />
             <Text style={styles.titulo}>Today's Task</Text>
             <FlatList
                 data={taskItems}
-                renderItem={({ item }) => <Tarefas item={item} />}
+                renderItem={({ item, index }) => <Tarefas item={item} index={index} setTaskItems={setTaskItems} taskItems={taskItems} />}
                 keyExtractor={(item, index) => index.toString()}
             />
             <View style={styles.inputContainer}>
@@ -45,7 +69,7 @@ const App = () => {
                     }}
                     disabled={!task}
                 >
-                    <Ionicons name="add" size={30} color="gray" />
+                    <Ionicons name="add" size={40} color="gray" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -67,8 +91,21 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         color: "black",
     },
-    titulo: {
+    taskContainer:{
+        padding: 20,
+        backgroundColor: "white",
+        marginTop: 10,
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    task:{
         fontSize: 24,
+        width: "80%",
+    },
+    titulo: {
+        fontSize: 36,
         fontWeight: "bold",
     },
     inputContainer: {
@@ -81,8 +118,9 @@ const styles = StyleSheet.create({
         textAlign: "center",
         borderWidth: 1,
         borderColor: "gray",
-        height: 40,
+        height: 60,
         borderRadius: 15,
+        fontSize: 20,
         backgroundColor: "white",
         width: "80%",
         shadowColor: "#000",
