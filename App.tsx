@@ -20,38 +20,69 @@ const Tarefas = ({
     taskItems: Array<string>;
     setTaskItems: Dispatch<React.SetStateAction<string[]>>;
     index: number;
-
 }) => {
+    const [newTask, setNewTask] = useState(item);
+    const [edit, setEdit] = useState(false);
 
-    const handleApagar = ()=>{
+    const editarTask = () => {
+        const newTaskItems = [...taskItems];
+        newTaskItems[index] = newTask;
+        setTaskItems(newTaskItems);
+        setEdit(false);
+    };
+
+    const handleApagar = () => {
         const newTaskItems = taskItems.filter((_, i) => i !== index);
         setTaskItems(newTaskItems);
-    }
+    };
+
+    const handleEditar = () => {
+        setEdit(true);
+    };
 
     return (
         <View style={styles.taskContainer}>
-            <Text style={styles.task}>{item}</Text>
+            <Text
+                onPress={() => handleEditar()}
+                style={[styles.task, { display: edit ? "none" : "flex" }]}
+            >
+                {item}
+            </Text>
+            <TextInput
+                style={[styles.inputTask, { display: edit ? "flex" : "none" }]}
+                value={newTask}
+                onChangeText={(text) => setNewTask(text)}
+                onSubmitEditing={() => editarTask()}
+            />
             <Ionicons
+                style={styles.iconsStyle}
                 name="trash"
                 size={30}
                 color="red"
-                onPress={() => handleApagar()}/>
+                onPress={() => handleApagar()}
+            />
         </View>
     );
 };
 
-
 const App = () => {
     const [task, setTask] = useState("");
     const [taskItems, setTaskItems] = useState<Array<string>>([]);
-    
+
     return (
-        <View style={styles.safeArea}>
+        <View style={styles.home}>
             <StatusBar style="auto" />
             <Text style={styles.titulo}>Today's Task</Text>
             <FlatList
                 data={taskItems}
-                renderItem={({ item, index }) => <Tarefas item={item} index={index} setTaskItems={setTaskItems} taskItems={taskItems} />}
+                renderItem={({ item, index }) => (
+                    <Tarefas
+                        item={item}
+                        index={index}
+                        setTaskItems={setTaskItems}
+                        taskItems={taskItems}
+                    />
+                )}
                 keyExtractor={(item, index) => index.toString()}
             />
             <View style={styles.inputContainer}>
@@ -79,7 +110,7 @@ const App = () => {
 export default App;
 
 const styles = StyleSheet.create({
-    safeArea: {
+    home: {
         flex: 1,
         paddingTop: 60,
         backgroundColor: "#f8f8f8",
@@ -91,7 +122,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         color: "black",
     },
-    taskContainer:{
+    taskContainer: {
         padding: 20,
         backgroundColor: "white",
         marginTop: 10,
@@ -99,10 +130,20 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        flexWrap: "wrap",
     },
-    task:{
+    task: {
         fontSize: 24,
-        width: "80%",
+        width: "90%",
+    },
+    inputTask: {
+        fontSize: 24,
+        width: "60%",
+        borderBottomWidth: 1,
+        display: "none",
+    },
+    iconsStyle: {
+        width: "10%",
     },
     titulo: {
         fontSize: 36,
@@ -133,6 +174,7 @@ const styles = StyleSheet.create({
 
         elevation: 6,
     },
+
     addBtn: {
         backgroundColor: "white",
         borderRadius: 50,
