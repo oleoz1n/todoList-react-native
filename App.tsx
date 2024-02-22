@@ -24,20 +24,20 @@ const Tarefas = ({
     const [newTask, setNewTask] = useState(item);
     const [edit, setEdit] = useState(false);
 
-    const editarTask = () => {
-        const newTaskItems = [...taskItems];
-        newTaskItems[index] = newTask;
-        setTaskItems(newTaskItems);
-        setEdit(false);
-    };
-
     const handleApagar = () => {
         const newTaskItems = taskItems.filter((_, i) => i !== index);
         setTaskItems(newTaskItems);
     };
 
     const handleEditar = () => {
-        setEdit(true);
+        if (!edit) {
+            setEdit(true);
+        } else {
+            const newTaskItems = [...taskItems];
+            newTaskItems[index] = newTask;
+            setTaskItems(newTaskItems);
+            setEdit(false);
+        }
     };
 
     return (
@@ -52,7 +52,7 @@ const Tarefas = ({
                 style={[styles.inputTask, { display: edit ? "flex" : "none" }]}
                 value={newTask}
                 onChangeText={(text) => setNewTask(text)}
-                onSubmitEditing={() => editarTask()}
+                onSubmitEditing={() => handleEditar()}
             />
             <Ionicons
                 style={styles.iconsStyle}
